@@ -13,6 +13,7 @@ QString getELFPath(const QString& elfname);
 QString getIDByELFName(const QString& elfname);
 QStringList getDependsByIDStr(const QString& id);
 QStringList qtfirst(const QStringList& libs);
+QStringList getldsoconf();
 
 
 #endif // PROCREADER_H

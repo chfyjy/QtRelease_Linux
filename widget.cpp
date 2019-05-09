@@ -122,28 +122,25 @@ void Widget::startCopyClicked()
     copytPool->waitForDone();
     createBash();
     infol->setText("copy success");
-    //exenameEdit->setText("Give me a star at https://github.com/chfyjy/QtWindeploy.git");
 }
 
 
+QString getPlugins(const QString& libpath)
+{
+    QString pattern = "/plugins/(.*)/";
+    QRegExp regexp(pattern);
+    int pos = 0;
+    pos = regexp.indexIn(libpath, pos);
+    return regexp.cap(1);
+}
+
 void Widget::createBash(void)
 {
-    QStringList bashdata;
-    QString tmpdata, str;
-    str = elfpath + '/';
+    QStringList bashdata, ldconf;
+    QString tmpdata, strdata;
     int needlength, length;
-    bashdata.append("#!/bin/sh\n");
+    bashdata.append("#!/bin/bash\n");
 
-    for(int i = 0; i < libneed.count(); i++)
-    {
-        qDebug() << libcopyto.at(i);
-        length = libcopyto.at(i).length();
-        needlength = length - str.length();
-        tmpdata = libcopyto.at(i).right(needlength+2);
-        qDebug() << tmpdata;
-        tmpdata = QString("mv %1 %2\n").arg(tmpdata).arg(libneed.at(i));
-        bashdata.append(tmpdata);
-    }
     QString installpath;
     foreach(QString str, libneed)
     {
@@ -153,9 +150,43 @@ void Widget::createBash(void)
             break;
         }
     }
-    QString exportstr = QString("export LD_LIBRARY_PATH=%1/lib:$LD_LIBRARY_PATH >> ~/.bashrc\n").arg(installpath);
-    bashdata.append(exportstr);
-    bashdata.append("source ~/.bashrc");
+    bashdata.append(QString("mkdir -p %1/lib\n").arg(installpath));
+    ldconf = getldsoconf();
+
+    foreach(QString str, ldconf)
+        bashdata.append(QString("echo \"%1/lib\n\" >> %2\n").arg(installpath).arg(str));
+
+    foreach(QString str, libneed)
+    {
+        if(str.contains("/plugins/"))
+        {
+            strdata = getPlugins(str);
+            tmpdata = QString("mkdir -p %1/plugins/%2\n").arg(installpath).arg(strdata);
+            if(!bashdata.contains(tmpdata))
+            {
+                bashdata.append(tmpdata);
+                foreach(QString str1, ldconf)
+                bashdata.append(QString("echo \"%1/plugins/%2\n\" >> %3\n").arg(installpath).arg(strdata).arg(str1));
+
+            }
+        }
+    }
+
+    strdata = elfpath + '/';
+    for(int i = 0; i < libneed.count(); i++)
+    {
+        //qDebug() << libcopyto.at(i);
+        length = libcopyto.at(i).length();
+        needlength = length - strdata.length();
+        tmpdata = libcopyto.at(i).right(needlength+1);
+        //qDebug() << tmpdata;
+        tmpdata = QString("mv %1 %2\n").arg(tmpdata).arg(libneed.at(i));
+        bashdata.append(tmpdata);
+    }
+
+//    QString exportstr = QString("echo \"export LD_LIBRARY_PATH=%1/lib:$LD_LIBRARY_PATH\" >> /etc/profile\n").arg(installpath);
+//    bashdata.append(exportstr);
+//    //bashdata.append("source ~/.bashrc");//for this not '#!/bin/sh'
 
     QFile bashfile(elfpath + "/install.sh");
 
@@ -191,10 +222,10 @@ void Widget::initLibView(void)
 void Widget::initControls()
 {
     QLabel *exenamel = new QLabel(this);
-    exenamel->setText("exe name");
+    exenamel->setText("target");
     exenameEdit = new QLineEdit(this);
     analyze = new QPushButton(this);
-    analyze->setText("get dll info");
+    analyze->setText("get so info");
     connect(analyze, SIGNAL(clicked()), this, SLOT(analyzeClicked()));
     startCopy = new QPushButton(this);
     startCopy->setMaximumWidth(40);
