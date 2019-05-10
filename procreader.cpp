@@ -5,17 +5,17 @@ const QString libspath = "maps";
 const QString elfname = "cmdline";
 
 
-QStringList getldsoconf()
+QString getldsoconf()
 {
-    QStringList ret;
     QString confd = "/etc/ld.so.conf.d";
     QDir confDir(confd);
     foreach(QFileInfo info, confDir.entryInfoList())
     {
         if(info.isFile())
-            ret.append(confd + "/" +info.fileName());
+            return  confd + "/" + info.fileName();
     }
-    return ret;
+
+    return "";
 }
 
 QString getELFNameByCMDLINE(const QString& cmdline)

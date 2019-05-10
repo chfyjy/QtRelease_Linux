@@ -74,21 +74,23 @@ void Widget::getNeedLibrarys(void)
         if(qtlibviewmodel->item(i, 0)->checkState() == Qt::Checked)
             libneed << qtlibviewmodel->index(i,0).data().toString();
     }
-    QString tmp, tmp_dir;
+    QString tmp, tmp_dir, plugins1;
+    plugins1 = "/plugins/";
     foreach(QString str, libneed)
     {
-        if(str.contains("/plugins/"))
+        if(str.contains(plugins1))
         {
-            tmp = elfpath + str.split("/plugins/").constLast();
-            tmp_dir = str.split("/plugins/").constLast();
+            tmp_dir = str.split(plugins1).constLast();
             tmp_dir = tmp_dir.split("/").constFirst();
-            libneeddirs.append(elfpath+tmp_dir);
+            tmp = QString("%1%2").arg(elfpath).arg(str.split(plugins1).constLast());
+            tmp_dir = QString("%1%2").arg(elfpath).arg(tmp_dir);
+            if(!libneeddirs.contains(tmp_dir))
+                libneeddirs.append(tmp_dir);
         }
         else
             tmp = elfpath + str.split("/").constLast();
         libcopyto.append(tmp);
     }
-
 }
 
 void Widget::createNeededDir(void)
@@ -98,9 +100,9 @@ void Widget::createNeededDir(void)
     {
         QDir dir(libneeddirs.at(i));
         if(dir.exists())
-          continue;
+            continue;
         else
-           dir.mkdir(libneeddirs.at(i));
+            dir.mkdir(libneeddirs.at(i));
     }
     infol->setText("created dir");
 }
@@ -109,9 +111,9 @@ void Widget::startCopyClicked()
 {
     if(librarys.isEmpty())
     {
-            QMessageBox::information(this, "Tip", "Enter \"xxx\" to lineedit, and run it(no full path)");
-            exenameEdit->setEnabled(true);
-            return;
+        QMessageBox::information(this, "Tip", "Enter \"xxx\" to lineedit, and run it(no full path)");
+        exenameEdit->setEnabled(true);
+        return;
     }
     getNeedLibrarys();
     createNeededDir();
@@ -121,73 +123,18 @@ void Widget::startCopyClicked()
 
     copytPool->waitForDone();
     createBash();
+
     infol->setText("copy success");
-}
-
-
-QString getPlugins(const QString& libpath)
-{
-    QString pattern = "/plugins/(.*)/";
-    QRegExp regexp(pattern);
-    int pos = 0;
-    pos = regexp.indexIn(libpath, pos);
-    return regexp.cap(1);
 }
 
 void Widget::createBash(void)
 {
-    QStringList bashdata, ldconf;
-    QString tmpdata, strdata;
-    int needlength, length;
+    QStringList bashdata;
+    QString ldconf = getldsoconf();
     bashdata.append("#!/bin/bash\n");
-
-    QString installpath;
-    foreach(QString str, libneed)
-    {
-        if(str.contains("libQt"))
-        {
-            installpath = str.split("/lib/").constFirst();
-            break;
-        }
-    }
-    bashdata.append(QString("mkdir -p %1/lib\n").arg(installpath));
-    ldconf = getldsoconf();
-
-    foreach(QString str, ldconf)
-        bashdata.append(QString("echo \"%1/lib\n\" >> %2\n").arg(installpath).arg(str));
-
-    foreach(QString str, libneed)
-    {
-        if(str.contains("/plugins/"))
-        {
-            strdata = getPlugins(str);
-            tmpdata = QString("mkdir -p %1/plugins/%2\n").arg(installpath).arg(strdata);
-            if(!bashdata.contains(tmpdata))
-            {
-                bashdata.append(tmpdata);
-                foreach(QString str1, ldconf)
-                bashdata.append(QString("echo \"%1/plugins/%2\n\" >> %3\n").arg(installpath).arg(strdata).arg(str1));
-
-            }
-        }
-    }
-
-    strdata = elfpath + '/';
-    for(int i = 0; i < libneed.count(); i++)
-    {
-        //qDebug() << libcopyto.at(i);
-        length = libcopyto.at(i).length();
-        needlength = length - strdata.length();
-        tmpdata = libcopyto.at(i).right(needlength+1);
-        //qDebug() << tmpdata;
-        tmpdata = QString("mv %1 %2\n").arg(tmpdata).arg(libneed.at(i));
-        bashdata.append(tmpdata);
-    }
-
-//    QString exportstr = QString("echo \"export LD_LIBRARY_PATH=%1/lib:$LD_LIBRARY_PATH\" >> /etc/profile\n").arg(installpath);
-//    bashdata.append(exportstr);
-//    //bashdata.append("source ~/.bashrc");//for this not '#!/bin/sh'
-
+    bashdata.append("appdir=$(pwd)\n");
+    bashdata.append(QString("echo $appdir >> %1\n").arg(ldconf));
+    bashdata.append("ldconfig\n");
     QFile bashfile(elfpath + "/install.sh");
 
     if(bashfile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -270,4 +217,3 @@ void Widget::initControls()
     setLayout(layout);
     setGeometry(100,100,400, 300);
 }
-
