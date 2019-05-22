@@ -7,6 +7,7 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("QtRelease");
+    setWindowIcon(QIcon(":/qtsfkuan.png"));
     setMinimumWidth(800);
     setMinimumHeight(600);
     initControls();
