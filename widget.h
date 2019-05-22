@@ -75,7 +75,7 @@ private:
     Ui::Widget *ui;
     QThreadPool *copytPool;
     CopyTask *runcopy;
-    QLineEdit *exenameEdit, *viewEdit;
+    QLineEdit *elfnameEdit, *viewEdit;
     QPushButton *analyze, *startCopy;
     QCheckBox *qtcbox, *qtfirstcbox;
     QListView *qtlibview;

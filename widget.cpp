@@ -7,7 +7,6 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("QtRelease");
-    setWindowIcon(QIcon(":/qtsfkuan.png"));
     setMinimumWidth(800);
     setMinimumHeight(600);
     initControls();
@@ -44,32 +43,32 @@ void Widget::qtfirstcboxToggled(bool toggled)
 void Widget::analyzeClicked()
 {
     infol->setText("");
-    exenameEdit->setEnabled(false);
-    if(exenameEdit->text() == "")
+    elfnameEdit->setEnabled(false);
+    if(elfnameEdit->text() == "")
     {
         QMessageBox::information(this, "Tip", "Enter \"xxx\" to lineedit, and run it(no full path)");
-        exenameEdit->setText("");
-        exenameEdit->setEnabled(true);
+        elfnameEdit->setText("");
+        elfnameEdit->setEnabled(true);
         return;
     }
-    librarys = getDependsByIDStr(getIDByELFName(exenameEdit->text()));
+    librarys = getDependsByIDStr(getIDByELFName(elfnameEdit->text()));
     if(librarys.isEmpty())
     {
         QMessageBox::information(this, "Tip", "Enter \"xxx\" to lineedit, and run it(no full path)");
-        exenameEdit->setText("");
-        exenameEdit->setEnabled(true);
+        elfnameEdit->setText("");
+        elfnameEdit->setEnabled(true);
         return;
     }
     librarys_qtfirst = qtfirst(librarys);
     initLibView();
     infol->setText("Geted");
-    exenameEdit->setDisabled(false);
+    elfnameEdit->setDisabled(false);
 }
 
 void Widget::getNeedLibrarys(void)
 {
     libneed.clear();
-    elfpath = getELFPath(exenameEdit->text());
+    elfpath = getELFPath(elfnameEdit->text());
     for(int i = 0; i < qtlibviewmodel->rowCount(); i++)
     {
         if(qtlibviewmodel->item(i, 0)->checkState() == Qt::Checked)
@@ -113,7 +112,7 @@ void Widget::startCopyClicked()
     if(librarys.isEmpty())
     {
         QMessageBox::information(this, "Tip", "Enter \"xxx\" to lineedit, and run it(no full path)");
-        exenameEdit->setEnabled(true);
+        elfnameEdit->setEnabled(true);
         return;
     }
     getNeedLibrarys();
@@ -136,6 +135,19 @@ void Widget::createBash(void)
     bashdata.append("appdir=$(pwd)\n");
     bashdata.append(QString("echo $appdir >> %1\n").arg(ldconf));
     bashdata.append("ldconfig\n");
+    QString quicklyfile = QString("/usr/share/applications/%1.desktop").arg(elfnameEdit->text());
+    bashdata.append(QString("touch %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo [Desktop Entry] >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo Name=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+    bashdata.append(QString("echo Name[zh_CN]=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+    bashdata.append(QString("echo Comment=%1 Client>> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+    bashdata.append(QString("echo Exec=$appdir/%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+    bashdata.append(QString("echo Icon=$appdir/logo.ico >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo Terninal=false >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo Type=Application >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo 'Categories=Application;' >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo Encoding=UTF-8 >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo StartupNotify=ture >> %1\n").arg(quicklyfile));
     QFile bashfile(elfpath + "/install.sh");
 
     if(bashfile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -171,7 +183,7 @@ void Widget::initControls()
 {
     QLabel *exenamel = new QLabel(this);
     exenamel->setText("target");
-    exenameEdit = new QLineEdit(this);
+    elfnameEdit = new QLineEdit(this);
     analyze = new QPushButton(this);
     analyze->setText("get so info");
     connect(analyze, SIGNAL(clicked()), this, SLOT(analyzeClicked()));
@@ -181,7 +193,7 @@ void Widget::initControls()
     connect(startCopy, SIGNAL(clicked()), this, SLOT(startCopyClicked()));
     QHBoxLayout *exeNamelayout = new QHBoxLayout();
     exeNamelayout->addWidget(exenamel);
-    exeNamelayout->addWidget(exenameEdit);
+    exeNamelayout->addWidget(elfnameEdit);
     exeNamelayout->addWidget(analyze);
     exeNamelayout->addWidget(startCopy);
 
