@@ -37,31 +37,58 @@ eg.
 install.sh
 
 #!/bin/bash
+
 appdir=$(pwd)
+
 echo $appdir >> /etc/ld.so.conf.d/fakeroot-x86_64-linux-gnu.conf
+
 ldconfig
+
 touch /usr/share/applications/QtRelease.desktop
+
 echo [Desktop Entry] >> /usr/share/applications/QtRelease.desktop
+
 echo Name=QtRelease >> /usr/share/applications/QtRelease.desktop
+
 echo Name[zh_CN]=QtRelease >> /usr/share/applications/QtRelease.desktop
+
 echo Comment=QtRelease Client>> /usr/share/applications/QtRelease.desktop
+
 echo Exec=$appdir/QtRelease >> /usr/share/applications/QtRelease.desktop
+
 echo Icon=$appdir/logo.ico >> /usr/share/applications/QtRelease.desktop
+
 echo Terninal=false >> /usr/share/applications/QtRelease.desktop
+
 echo Type=Application >> /usr/share/applications/QtRelease.desktop
+
 echo 'Categories=Application;' >> /usr/share/applications/QtRelease.desktop
+
 echo Encoding=UTF-8 >> /usr/share/applications/QtRelease.desktop
+
 echo StartupNotify=ture >> /usr/share/applications/QtRelease.desktop
 
+
 eg. QtRelease.desktop
+
 [Desktop Entry]
+
 Name=QtRelease
+
 Name[zh_CN]=QtRelease
+
 Comment=QtRelease Client
+
 Exec=/home/chf/Desktop/build-QtRelease-Desktop_Qt_5_12_0_GCC_64bit-Release/QtRelease
+
 Icon=/home/chf/Desktop/build-QtRelease-Desktop_Qt_5_12_0_GCC_64bit-Release/logo.ico
+
 Terninal=false
+
 Type=Application
+
 Categories=Application;
+
 Encoding=UTF-8
+
 StartupNotify=ture
