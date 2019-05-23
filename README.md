@@ -30,6 +30,6 @@
 注意：如有权限问题请 chmod 或者sudo su切换为超级用户
       需要在可执行文件下有一个图标(logo.ico)文件 启动后任务栏即可显示图标
 
-
+logo from https://www.iconfont.cn/search/index?q=qtsfkuan
 
 如有问题请告知.
