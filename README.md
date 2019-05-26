@@ -29,6 +29,12 @@
 点击复制,复制完成后同时生成一个install.sh,在需要部署得pc上 运行这个脚本 
 注意：如有权限问题请 chmod 或者sudo su切换为超级用户
       需要在可执行文件下有一个图标(logo.ico)文件 启动后任务栏即可显示图标
+      
+5. 
+
+如果自行设置了库目录,那么你可能会依然出现找不到依赖的so文件 本程序仅依照qt
+
+默认的规则拷贝so文件到相应目录.此外的可能会造成失败.
 
 logo from https://www.iconfont.cn/search/index?q=qtsfkuan
 
