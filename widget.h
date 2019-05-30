@@ -75,14 +75,14 @@ private:
     Ui::Widget *ui;
     QThreadPool *copytPool;
     CopyTask *runcopy;
-    QLineEdit *elfnameEdit, *viewEdit;
+    QLineEdit *elfnameEdit, *viewEdit, *logoEdit;
     QPushButton *analyze, *startCopy;
     QCheckBox *qtcbox, *qtfirstcbox;
     QListView *qtlibview;
     QStringList librarys, librarys_qtfirst;
     QStandardItemModel *qtlibviewmodel;
     QStringList libneed, libneeddirs,libcopyto;
-    QLabel *infol;
+    QLabel *infol, *logol;
     QString elfpath;
 };
 

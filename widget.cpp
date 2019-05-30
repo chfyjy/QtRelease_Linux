@@ -36,6 +36,12 @@ void Widget::qtcboxToggled(bool toggled)
 
 void Widget::qtfirstcboxToggled(bool toggled)
 {
+
+    if(toggled)
+        infol->setText("Qt first");
+    else
+        infol->setText("Don't Qt first");
+
     Q_UNUSED(toggled);
     initLibView();
 }
@@ -142,7 +148,7 @@ void Widget::createBash(void)
     bashdata.append(QString("echo Name[zh_CN]=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
     bashdata.append(QString("echo Comment=%1 Client>> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
     bashdata.append(QString("echo Exec=$appdir/%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
-    bashdata.append(QString("echo Icon=$appdir/logo.ico >> %1\n").arg(quicklyfile));
+    bashdata.append(QString("echo Icon=$appdir/%1 >> %2\n").arg(logoEdit->text()).arg(quicklyfile));
     bashdata.append(QString("echo Terninal=false >> %1\n").arg(quicklyfile));
     bashdata.append(QString("echo Type=Application >> %1\n").arg(quicklyfile));
     bashdata.append(QString("echo 'Categories=Application;' >> %1\n").arg(quicklyfile));
@@ -197,6 +203,11 @@ void Widget::initControls()
     exeNamelayout->addWidget(analyze);
     exeNamelayout->addWidget(startCopy);
 
+    logol = new QLabel(this);
+    logol->setText("logo name");
+    logoEdit = new QLineEdit(this);
+    logoEdit->setFixedWidth(150);
+    logoEdit->setText("logo.ico");
     qtfirstcbox = new  QCheckBox(this);
     qtfirstcbox->setText("Qt first");
     qtfirstcbox->setMaximumWidth(150);
@@ -211,6 +222,8 @@ void Widget::initControls()
     QHBoxLayout *cboxLayout = new QHBoxLayout();
     infol = new QLabel(this);
     infol->setText("");
+    cboxLayout->addWidget(logol);
+    cboxLayout->addWidget(logoEdit);
     cboxLayout->addWidget(qtcbox);
     cboxLayout->addWidget(qtfirstcbox);
     cboxLayout->addWidget(infol);
