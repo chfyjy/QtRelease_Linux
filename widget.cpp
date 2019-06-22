@@ -141,19 +141,22 @@ void Widget::createBash(void)
     bashdata.append("appdir=$(pwd)\n");
     bashdata.append(QString("echo $appdir >> %1\n").arg(ldconf));
     bashdata.append("ldconfig\n");
-    QString quicklyfile = QString("/usr/share/applications/%1.desktop").arg(elfnameEdit->text());
-    bashdata.append(QString("touch %1\n").arg(quicklyfile));
-    bashdata.append(QString("echo [Desktop Entry] >> %1\n").arg(quicklyfile));
-    bashdata.append(QString("echo Name=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
-    bashdata.append(QString("echo Name[zh_CN]=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
-    bashdata.append(QString("echo Comment=%1 Client>> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
-    bashdata.append(QString("echo Exec=$appdir/%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
-    bashdata.append(QString("echo Icon=$appdir/%1 >> %2\n").arg(logoEdit->text()).arg(quicklyfile));
-    bashdata.append(QString("echo Terninal=false >> %1\n").arg(quicklyfile));
-    bashdata.append(QString("echo Type=Application >> %1\n").arg(quicklyfile));
-    bashdata.append(QString("echo 'Categories=Application;' >> %1\n").arg(quicklyfile));
-    bashdata.append(QString("echo Encoding=UTF-8 >> %1\n").arg(quicklyfile));
-    bashdata.append(QString("echo StartupNotify=ture >> %1\n").arg(quicklyfile));
+    if(!logoEdit->text().isEmpty() && QFile::exists(elfpath + "/" +logoEdit->text()) )
+    {
+        QString quicklyfile = QString("/usr/share/applications/%1.desktop").arg(elfnameEdit->text());
+        bashdata.append(QString("touch %1\n").arg(quicklyfile));
+        bashdata.append(QString("echo [Desktop Entry] >> %1\n").arg(quicklyfile));
+        bashdata.append(QString("echo Name=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+        bashdata.append(QString("echo Name[zh_CN]=%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+        bashdata.append(QString("echo Comment=%1 Client>> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+        bashdata.append(QString("echo Exec=$appdir/%1 >> %2\n").arg(elfnameEdit->text()).arg(quicklyfile));
+        bashdata.append(QString("echo Icon=$appdir/%1 >> %2\n").arg(logoEdit->text()).arg(quicklyfile));
+        bashdata.append(QString("echo Terninal=false >> %1\n").arg(quicklyfile));
+        bashdata.append(QString("echo Type=Application >> %1\n").arg(quicklyfile));
+        bashdata.append(QString("echo 'Categories=Application;' >> %1\n").arg(quicklyfile));
+        bashdata.append(QString("echo Encoding=UTF-8 >> %1\n").arg(quicklyfile));
+        bashdata.append(QString("echo StartupNotify=ture >> %1\n").arg(quicklyfile));
+    }
     QFile bashfile(elfpath + "/install.sh");
 
     if(bashfile.open(QIODevice::WriteOnly | QIODevice::Text))
