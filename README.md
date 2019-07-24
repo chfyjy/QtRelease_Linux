@@ -1,4 +1,4 @@
-使用教程https://www.bilibili.com/video/av52111697/?p=1
+使用教程https://www.bilibili.com/video/av52111697/?p=2
 
 
 使用说明
