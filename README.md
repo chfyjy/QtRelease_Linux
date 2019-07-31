@@ -1,6 +1,15 @@
 使用教程https://www.bilibili.com/video/av52111697/?p=2
 
 
+凡是使用了
+    
+    QApplication::setLibraryPaths();
+    
+    QApplication::addLibraryPath();
+    
+    等设置路径的函数 均会导致使用工具后依然部署失败的情况 如有 请自行解决
+
+
 使用说明
 
 
